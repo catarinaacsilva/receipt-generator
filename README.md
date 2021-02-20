@@ -1,8 +1,20 @@
 # Receipt Generator
 
 
+
 ## Requirements
 
+
+## Receipt structure
+
+```
+{
+    "ID"    :   "123"
+    "
+}
+
+
+```
 
 
 ## Authors
