@@ -5,10 +5,15 @@
 {% block content %}
 <h1>Receipt Initial Demo</h1>
 
-<form>
-    <p>First Name: <input type="text" name="firstname"></p>
-    <p>Last Name: <input type="text" name="lastname"></p>
-    <p><input type="submit" value="Submit"></p>
+<form action="" method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="Submit" name="submit" value="Submit"/>
 </form>
+
+{% if submitbutton == "Submit" %} 
+<h1> Your first name is {{ firstname }}</h1>
+<h1> Your last name is {{ lastname }}</h1>
+{% endif %}
 
 {% endblock %}
