@@ -1,0 +1,48 @@
+version: '3'
+services:
+    postgres:
+        restart: always
+        image: postgres:latest
+        volumes:
+            - postgres-storage:/var/lib/postgres
+        environment:
+            - POSTGRES_ROOT_PASSWORD= ${POSTGRES_ROOT_PASSWORD}
+            - POSTGRES_DATABASE= postgresdb
+            - POSTGRES_USER= ${POSTGRES_USER}
+            - POSTGRES_PASSWORD= ${POSTGRES_PASSWORD}
+        restart: always
+
+    mariadb:
+        image: mariadb:latest
+        volumes:
+            - mariadb-storage:/var/lib/mariadb
+        environment:
+            - MYSQL_ROOT_PASSWORD= ${MYSQL_ROOT_PASSWORD}
+            - MYSQL_DATABASE= cassiopeiamariadb
+            - MYSQL_USER= ${MYSQL_USER}
+            - MYSQL_PASSWORD= ${MYSQL_PASSWORD}
+        restart: always
+
+    django_webserver:
+        build: ./Django_webserver
+        volumes:
+            - ./Django_webserver:/app
+        ports:
+            - "8000:80"
+        command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver"
+        restart: always
+
+volumes:
+    mariadb-storage:
+      driver: local
+      driver_opts:
+        o: bind
+        type: none
+        device: ./mariadb
+    postgres-storage:
+      driver: local
+      driver_opts:
+        o: bind
+        type: none
+        device: ./postgres
+        
