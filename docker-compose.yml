@@ -23,10 +23,10 @@ services:
             - MYSQL_PASSWORD= ${MYSQL_PASSWORD}
         restart: always
 
-    django_webserver:
-        build: ./Django_webserver
+    receiptgenerator:
+        build: ./receiptGenerator
         volumes:
-            - ./Django_webserver:/app
+            - ./receiptGenerator:/app
         ports:
             - "8000:80"
         command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver"
