@@ -87,16 +87,13 @@ def receiptGenerator(request):
     'Legal Justification': legalJustification, 
     'Method of Collection': methodCollection}
 
-    print('recibo')
-    print(receipt)
-    logging.info(receipt)
-
-
     receipt_json = json.dumps(receipt)
    
     digestjson = hashes.Hash(hashes.SHA256())
     digestjson.update(receipt_json.encode())
     receiptFingerprint = digestjson.finalize()
     receipt['Receipt Fingerprint'] = base64.b64encode(receiptFingerprint).decode('utf-8')
+
+    logging.info(receipt)
 
     return JsonResponse(receipt, content_type='application/json')
