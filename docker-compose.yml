@@ -2,24 +2,26 @@ version: '3'
 services:
     postgres:
         restart: always
-        image: postgres:latest
+        image: postgres:13-alpine
         volumes:
             - postgres-storage:/var/lib/postgres
         environment:
-            - POSTGRES_ROOT_PASSWORD= ${POSTGRES_ROOT_PASSWORD}
-            - POSTGRES_DATABASE= postgresdb
-            - POSTGRES_USER= ${POSTGRES_USER}
-            - POSTGRES_PASSWORD= ${POSTGRES_PASSWORD}
+            - POSTGRES_ROOT_PASSWORD=${POSTGRES_ROOT_PASSWORD}
+            - POSTGRES_DATABASE=postgresdb
+            - POSTGRES_USER=${POSTGRES_USER}
+            - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+        ports:
+            - "5432:5432"
         restart: always
 
-    receiptgenerator:
-        build: ./receiptGenerator
-        volumes:
-            - ./receiptGenerator:/app
-        ports:
-            - "8000:80"
-        command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:80"
-        restart: always
+    #receiptgenerator:
+        #build: ./receiptGenerator
+        #volumes:
+        #    - ./receiptGenerator:/app
+        #ports:
+        #    - "8000:80"
+        #command: bash -c "python3 manage.py makemigrations && python3 manage.py migrate && python3 manage.py runserver 0.0.0.0:80"
+        #restart: always
 
 volumes:
     postgres-storage:
