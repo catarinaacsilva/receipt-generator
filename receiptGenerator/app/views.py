@@ -12,6 +12,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa
 
 from .models import Receipt_Block
 
+logger = logging.getLogger(__name__)
+
 #cache
 
 key = None
@@ -96,10 +98,14 @@ def receiptGenerator(request):
     receiptFingerprint = digestjson.finalize()
     receipt['Receipt Fingerprint'] = base64.b64encode(receiptFingerprint).decode('utf-8')
 
-    logging.info(receipt)
+    logger.info(receipt)
 
     return JsonResponse(receipt, content_type='application/json')
 
-# para continuar
-def storeReceipt():
-    Receipt_Block.managerReceipts(id_receipt)
+def store_receipt(request):
+    json_receipt = json.loads(request.body)
+    logger.info(json_receipt)
+
+    Receipt_Block.objects.create(json_receipt['Receipt ID'], json_receipt, json_receipt['Receipt Timestamp'])
+
+    return #TODO status code
