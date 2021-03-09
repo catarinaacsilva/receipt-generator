@@ -10,6 +10,8 @@ from datetime import datetime
 from cryptography.hazmat.primitives import hashes, hmac
 from cryptography.hazmat.primitives.asymmetric import rsa
 
+from .models import Receipt_Block
+
 #cache
 
 key = None
@@ -97,3 +99,7 @@ def receiptGenerator(request):
     logging.info(receipt)
 
     return JsonResponse(receipt, content_type='application/json')
+
+# para continuar
+def storeReceipt():
+    Receipt_Block.managerReceipts(id_receipt)
