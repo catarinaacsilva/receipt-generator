@@ -1,13 +1,13 @@
 version: '3'
 services:
-    postgres:
+    postgres_receipt:
         restart: always
         image: postgres:13-alpine
         volumes:
             - postgres-storage:/var/lib/postgres
         environment:
-            - POSTGRES_ROOT_PASSWORD=${POSTGRES_ROOT_PASSWORD}
-            - POSTGRES_DATABASE=postgresdb
+            #- POSTGRES_ROOT_PASSWORD=${POSTGRES_ROOT_PASSWORD}
+            - POSTGRES_DATABASE=receiptdb
             - POSTGRES_USER=${POSTGRES_USER}
             - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
         ports:
