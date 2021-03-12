@@ -38,7 +38,6 @@ def generate_keypair():
 '''
     Receipt Generator
         Returns a json with input parameters
-        (missing the final structure)
 '''
 def receiptGenerator(request):
     version = request.GET['version']
@@ -102,10 +101,19 @@ def receiptGenerator(request):
 
     return JsonResponse(receipt, content_type='application/json')
 
+'''
+    Receive the receipt (json) and store it on the database
+'''
+@csrf_exempt
+@api_view(('POST',))
 def store_receipt(request):
     json_receipt = json.loads(request.body)
     logger.info(json_receipt)
 
-    Receipt_Block.objects.create(json_receipt['Receipt ID'], json_receipt, json_receipt['Receipt Timestamp'])
-
-    return #TODO status code
+    try:
+        Receipt_Block.objects.create(json_receipt['Receipt ID'], json_receipt, json_receipt['Receipt Timestamp'])
+    except:
+        return Response('Cannot create the receipt record', status=status.HTTP_400_BAD_REQUEST)
+    
+    return Response(status=status.HTTP_201_CREATED)
+    
