@@ -1,3 +1,5 @@
 Django==3.1.7
 cryptography>=3.4.6
 psycopg2-binary>=2.8.6
+djangorestframework>=3.12.2
+requests>=2.25.1
