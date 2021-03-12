@@ -14,6 +14,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 
+from django.conf import settings
 from .models import Receipt_Block
 
 logger = logging.getLogger(__name__)
@@ -43,6 +44,8 @@ def generate_keypair():
     Receipt Generator
         Returns a json with input parameters
 '''
+@csrf_exempt
+@api_view(('GET',))
 def receiptGenerator(request):
     version = request.GET['version']
     now = datetime.now()
@@ -53,7 +56,7 @@ def receiptGenerator(request):
     else:
         language = request.GET['language']
     
-    selfservicepoint = 'http://cassiopeia.id/receipts'
+    selfservicepoint = setting.SELF_SERVICE_POINT
 
     key = generate_keypair()
     
@@ -104,6 +107,7 @@ def receiptGenerator(request):
     logger.info(receipt)
 
     return JsonResponse(receipt, content_type='application/json')
+
 
 '''
     Receive the receipt (json) and store it on the database
