@@ -108,13 +108,12 @@ def receiptGenerator(request):
 
     return JsonResponse(receipt, content_type='application/json')
 
-
 '''
-    Receive the receipt (json) and store it on the database
+    Store receipt on the database
 '''
 @csrf_exempt
 @api_view(('POST',))
-def store_receipt(request):
+def reply_receipt(request):
     json_receipt = json.loads(request.body)
     logger.info(json_receipt)
 
@@ -124,4 +123,3 @@ def store_receipt(request):
         return Response('Cannot create the receipt record', status=status.HTTP_400_BAD_REQUEST)
     
     return Response(status=status.HTTP_201_CREATED)
-    
