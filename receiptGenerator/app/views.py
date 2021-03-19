@@ -109,7 +109,7 @@ def receiptGenerator(request):
     return JsonResponse(receipt, content_type='application/json')
 
 '''
-    Store receipt on the database
+    Store receipt on the database and post data on data retention
 '''
 @csrf_exempt
 @api_view(('POST',))
@@ -118,6 +118,9 @@ def reply_receipt(request):
     logger.info(json_receipt)
 
     try:
+        url = settings.DATA_RETENTION_RECEIPT
+        receipt = {'id_receipt':json_receipt['Receipt ID'], 'receipt_timestamp':json_receipt['Receipt Timestamp']}
+        x = requests.post(url, data=receipt)
         Receipt_Block.objects.create(json_receipt['Receipt ID'], json_receipt, json_receipt['Receipt Timestamp'])
     except:
         return Response('Cannot create the receipt record', status=status.HTTP_400_BAD_REQUEST)

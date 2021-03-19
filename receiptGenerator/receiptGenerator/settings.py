@@ -132,3 +132,4 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 SELF_SERVICE_POINT = 'http://cassiopeia.id/receipts'
+DATA_RETENTION_RECEIPT = 'http://127.0.0.1:8000/receiptData'
