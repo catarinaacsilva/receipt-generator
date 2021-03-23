@@ -224,8 +224,8 @@ class Blockchain:
 # Creating our Blockchain
 blockchain = Blockchain()
 # Creating an address for the node running our server
-node_address = str(uuid4()).replace('-', '') #New
-root_node = 'e36f0158f0aed45b3bc755dc52ed4560d' #New
+#node_address = str(uuid4()).replace('-', '') #New
+#root_node = 'e36f0158f0aed45b3bc755dc52ed4560d' #New
 
 # Mining a new block
 @csrf_exempt
@@ -261,7 +261,7 @@ def is_valid(request):
         if is_valid:
             response = {'message': 'All good. The Blockchain is valid.'}
         else:
-            response = {'message': 'Houston, we have a problem. The Blockchain is not valid.'}
+            response = {'message': 'The Blockchain is not valid.'}
     return JsonResponse(response)
 
 '''
@@ -280,7 +280,7 @@ def add_transaction(request): #New
 
 # Connecting new nodes
 @csrf_exempt
-def connect_node(request): #New
+def connect_node(request):
     if request.method == 'POST':
         received_json = json.loads(request.body)
         nodes = received_json.get('nodes')
@@ -293,7 +293,7 @@ def connect_node(request): #New
     return JsonResponse(response)
 
 # Replacing the chain by the longest chain if needed
-def replace_chain(request): #New
+def replace_chain(request): 
     if request.method == 'GET':
         is_chain_replaced = blockchain.replace_chain()
         if is_chain_replaced:
