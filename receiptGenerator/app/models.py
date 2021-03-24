@@ -7,4 +7,4 @@ class Receipt_Block(models.Model):
     json_receipt = JSONField()
     timestamp_receipt = models.CharField(max_length = 100)
     timestamp_stored = models.DateTimeField(auto_now_add = True) # to know when the receipt was stored on the database
-    timestamp_updated = models.DateTimeField(auto_now = True)
+    #timestamp_updated = models.DateTimeField(auto_now = True)

@@ -121,13 +121,26 @@ def reply_receipt(request):
         url = settings.DATA_RETENTION_RECEIPT
         receipt = {'id_receipt':json_receipt['Receipt ID'], 'receipt_timestamp':json_receipt['Receipt Timestamp']}
         x = requests.post(url, data=receipt)
-        Receipt_Block.objects.create(json_receipt['Receipt ID'], json_receipt, json_receipt['Receipt Timestamp'])
+        block = mine_block(json_receipt)
+        Receipt_Block.objects.create(json_receipt['Receipt ID'], block, json_receipt['Receipt Timestamp'])
+        #Receipt_Block.objects.create(json_receipt['Receipt ID'], json_receipt, json_receipt['Receipt Timestamp'])
     except:
         return Response('Cannot create the receipt record', status=status.HTTP_400_BAD_REQUEST)
     
     return Response(status=status.HTTP_201_CREATED)
 
-
+'''
+    Chech if the receipt chain is valid
+'''
+@csrf_exempt
+@api_view(('GET',))
+def receipt_valid(request):
+    is_valid = blockchain.is_chain_valid(blockchain.chain)
+    if is_valid:
+        response = {'The chain is valid', status=status.HTTP_200_OK}
+    else:
+        response = {'The chain is not valid', status=status.HTTP_400_BAD_REQUEST}
+    return JsonResponse(response)
 
 
 ''' ########################################################################
@@ -228,14 +241,14 @@ blockchain = Blockchain()
 #root_node = 'e36f0158f0aed45b3bc755dc52ed4560d' #New
 
 # Mining a new block
-@csrf_exempt
-@api_view(('GET',))
-def mine_block(request):
+#@csrf_exempt
+#@api_view(('GET',))
+#def mine_block(request):
+def mine_block(data):
     previous_block = blockchain.get_last_block()
     previous_nonce = previous_block['nonce']
     nonce = blockchain.proof_of_work(previous_nonce)
     previous_hash = blockchain.hash(previous_block)
-    data = request.GET['data']
     #blockchain.add_transaction(sender = root_node, receiver = node_address, amount = 1.15, time=str(datetime.datetime.now()))
     block = blockchain.create_block(nonce, previous_hash, data)
     response = {'message': 'Congratulations, you just mined a block!',
@@ -255,6 +268,7 @@ def get_chain(request):
     return JsonResponse(response)
 
 # Checking if the Blockchain is valid
+'''
 def is_valid(request):
     if request.method == 'GET':
         is_valid = blockchain.is_chain_valid(blockchain.chain)
@@ -263,6 +277,7 @@ def is_valid(request):
         else:
             response = {'message': 'The Blockchain is not valid.'}
     return JsonResponse(response)
+'''
 
 '''
 # Adding a new transaction to the Blockchain
