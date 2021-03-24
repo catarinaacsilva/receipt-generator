@@ -9,12 +9,24 @@
 
 ```
 {
-    ""    :   ""
-    ""    :   ""
+    "Receipt  Version"    :   "CASSIOPEIA-202102"
+    "Receipt Timestamp"    :   "unix timestamp milliseconds"
+    "Receipt ID"    :   "UUID v4"
+    "Language"    :   "'English'"
+    "Self-service point"    :   "http://cassiopeia.id/receipts"
+    "Self-service token"    :   "HMAC ( Receipt ID + "cassio0key0peia" )"
+    "Privacy Polic"    :   "fingerprint	using SHA256"
+    "Consent Status"    :   "consent given" | "consent rejected"
+    "Legal Jurisdiction"    :   "'Europe'"
+    "Controller"    :   "Identity	legal entity as in the privacy policy"
+    "Legal Justification"    :   "'consent'"
+    "Method of Collection"    :   "'online web action'"
 }
-
-
 ```
+
+1. receipt fingerprint:	digest of the whole receipt up to here (SHA256)
+2. digest of method of collection: fingerprint (SHA256) of JavaScript + HTML of the page where the user clicks "I agree"
+3. Signed receipt from Controller: RSA2048; key generation and distribution are out of scope
 
 ## PostgreSQL - Database
 
