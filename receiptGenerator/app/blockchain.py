@@ -7,17 +7,7 @@ from .models import Chain
 logger = logging.getLogger(__name__)
 
 class Blockchain:
-
-    def __init__(self):
-        #TODO: Database connection or model
-        #self.chain = []
-
-        #self.transactions = [] #New
-        
-        #self.nodes = set() #New
-
     def create_block(self, nonce, previous_hash, data):
-
         block = {'index': len(self.chain) + 1,
                  'timestamp': datetime.timestamp(now),
                  'nonce': nonce,
@@ -54,7 +44,7 @@ class Blockchain:
     def hash(self, block):
         encoded_block = json.dumps(block)
         digest = hashes.Hash(hashes.SHA256())
-        digest.update(encoded_block).encode())
+        digest.update(encoded_block.encode())
         return digest.finalize()
         #encoded_block = json.dumps(block, sort_keys = True).encode()
         #return hashlib.sha256(encoded_block).hexdigest()
