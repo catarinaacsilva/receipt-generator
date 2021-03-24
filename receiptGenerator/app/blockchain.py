@@ -1,14 +1,22 @@
+import logging
+from cryptography.hazmat.primitives import hashes, hmac
+
+from .models import Chain
+
+logger = logging.getLogger(__name__)
 
 class Blockchain:
 
     def __init__(self):
         #TODO: Database connection or model
-        self.chain = []
+        #self.chain = []
+
         #self.transactions = [] #New
-        self.create_block(nonce = 1, previous_hash = '0')
+        
         #self.nodes = set() #New
 
     def create_block(self, nonce, previous_hash, data):
+
         block = {'index': len(self.chain) + 1,
                  'timestamp': datetime.timestamp(now),
                  'nonce': nonce,
@@ -16,19 +24,25 @@ class Blockchain:
                  'data': data
                  #'transactions': self.transactions #New
                 }
-        self.transactions = [] #New
-        self.chain.append(block)
+        #self.transactions = [] #New
+        #self.chain.append(block)
+        Chain.objects.create(json_block=block, json_receipt=data)
         return block
 
     #TODO: needs to query database
     def get_last_block(self):
-        return self.chain[-1]
+        last_entry_table = Chain.objects.latest()
+        return last_entry_table.json_block 
+        #return self.chain[-1]
 
     def proof_of_work(self, previous_nonce):
         new_nonce = 1
         check_nonce = False
         while check_nonce is False:
-            hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
+            #hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
+            digest = hashes.Hash(hashes.SHA256())
+            digest.update(str(new_nonce**2 - previous_nonce**2).encode())
+            hash_operation = digest.finalize().encode("hex").upper()
             if hash_operation[:4] == '0000':
                 check_nonce = True
             else:

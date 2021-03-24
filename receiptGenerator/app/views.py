@@ -158,19 +158,22 @@ def receipt_valid(request):
 #@api_view(('GET',))
 #def mine_block(request):
 def mine_block(data):
-    previous_block = blockchain.get_last_block()
-    previous_nonce = previous_block['nonce']
-    nonce = blockchain.proof_of_work(previous_nonce)
-    previous_hash = blockchain.hash(previous_block)
-    #blockchain.add_transaction(sender = root_node, receiver = node_address, amount = 1.15, time=str(datetime.datetime.now()))
-    block = blockchain.create_block(nonce, previous_hash, data)
+    if not Chain.objects.exists():
+        block = blockchain.create_block(nonce = 1, previous_hash = '0', data=data)
+    else:
+        previous_block = blockchain.get_last_block()
+        previous_nonce = previous_block['nonce']
+        nonce = blockchain.proof_of_work(previous_nonce)
+        previous_hash = blockchain.hash(previous_block)
+        #blockchain.add_transaction(sender = root_node, receiver = node_address, amount = 1.15, time=str(datetime.datetime.now()))
+        block = blockchain.create_block(nonce, previous_hash, data)
     response = {'message': 'Congratulations, you just mined a block!',
-                'index': block['index'],
-                'timestamp': block['timestamp'],
-                'nonce': block['nonce'],
-                'previous_hash': block['previous_hash'],
-                'data': data
-                #'transactions': block['transactions']}
+                    'index': block['index'],
+                    'timestamp': block['timestamp'],
+                    'nonce': block['nonce'],
+                    'previous_hash': block['previous_hash'],
+                    'data': data
+                    #'transactions': block['transactions']}
     return JsonResponse(response)
 
 # Getting the full Blockchain
