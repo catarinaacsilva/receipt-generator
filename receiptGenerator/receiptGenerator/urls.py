@@ -24,4 +24,6 @@ urlpatterns = [
     #path('admin/', admin.site.urls),
     url(r'^$', views.index, name='index'),
     url(r'^receipt/$', views.receiptGenerator, name='receiptGenerator'),
+    url(r'^reply_receipt', views.reply_receipt, name='reply_receipt'),
+    url(r'^receipt_valid', views.receipt_valid, name='receipt_valid'),
 ]
