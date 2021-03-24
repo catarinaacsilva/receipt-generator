@@ -1,4 +1,5 @@
 import logging
+import json
 from cryptography.hazmat.primitives import hashes, hmac
 
 from .models import Chain
@@ -49,15 +50,37 @@ class Blockchain:
                 new_nonce += 1
         return new_nonce
 
-    #TODO: Check if hashlib is the fastest hash library in python
+   
     def hash(self, block):
-        encoded_block = json.dumps(block, sort_keys = True).encode()
-        return hashlib.sha256(encoded_block).hexdigest()
+        encoded_block = json.dumps(block)
+        digest = hashes.Hash(hashes.SHA256())
+        digest.update(encoded_block).encode())
+        return digest.finalize()
+        #encoded_block = json.dumps(block, sort_keys = True).encode()
+        #return hashlib.sha256(encoded_block).hexdigest()
 
     def is_chain_valid(self, chain):
-        #TODO: Query Datase of model
-        previous_block = chain[0]
-        block_index = 1
+        #previous_block = Chain.objects.earliest()
+        #previous_block = chain[0]
+        chain = Chain.objects.all()
+        is_first = True
+        for o in chain:
+            block = o.json_block
+            if is_first:
+                is_first = False
+            else:
+                if block['previous_hash'] != self.hash(previous_block):
+                    return False
+                previous_nonce = previous_block['nonce']
+                nonce = block['nonce']
+                hash_operation = hashlib.sha256(str(nonce**2 - previous_nonce**2).encode()).hexdigest()
+                if hash_operation[:4] != '0000':
+                    return False
+            previous_block = block
+        return True
+
+    '''
+        #block_index = 1
         #TODO: Query all lines in a table...
         while block_index < len(chain):
             block = chain[block_index]
@@ -71,6 +94,7 @@ class Blockchain:
             previous_block = block
             block_index += 1
         return True
+    '''
 
     #TODO: this was used to have rapid access to the data
     #TODO: you did not had to query the blocks to find the data
