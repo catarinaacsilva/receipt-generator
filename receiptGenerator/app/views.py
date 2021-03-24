@@ -124,7 +124,7 @@ def reply_receipt(request):
     json_receipt = json.loads(request.body)
     logger.info(json_receipt)
 
-    #TODO: Check receipt
+    #TODO: Check receipt: já esta verificado quando gera
 
     try:
         #url = settings.DATA_RETENTION_RECEIPT
@@ -145,13 +145,14 @@ def reply_receipt(request):
 '''
 @csrf_exempt
 @api_view(('GET',))
-def receipt_valid(request):
+def receipt_chain_valid(request):
     is_valid = blockchain.is_chain_valid()
     if is_valid:
         response = JsonResponse({'Message':'The chain is valid', 'Valid':True}, status=status.HTTP_201_CREATED)
     else:
         response = JsonResponse({'Message':'The chain is not valid', 'Valid': False}, status=status.HTTP_400_BAD_REQUEST)
     return response
+
 
 '''
     Add new block
