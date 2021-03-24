@@ -134,7 +134,6 @@ def reply_receipt(request):
         with transaction.atomic():
             block = mine_block(json_receipt)
             Chain.objects.create(json_block=block, json_receipt=json_receipt)
-        #Receipt_Block.objects.create(json_receipt['Receipt ID'], json_receipt, json_receipt['Receipt Timestamp'])
     except Exception as e:
         handle_exception()
         print(e)
@@ -145,7 +144,6 @@ def reply_receipt(request):
 '''
     Chech if the receipt chain is valid
 '''
-
 @csrf_exempt
 @api_view(('GET',))
 def receipt_valid(request):
@@ -156,7 +154,9 @@ def receipt_valid(request):
         response = JsonResponse({'Message':'The chain is not valid', 'Valid': False}, status=status.HTTP_400_BAD_REQUEST)
     return response
 
-
+'''
+    Add new block
+'''
 def mine_block(data):
     if not Chain.objects.exists():
         block = blockchain.create_block(nonce = 1, previous_hash = '0', data=data)
@@ -165,7 +165,6 @@ def mine_block(data):
         previous_nonce = previous_block['nonce']
         nonce = blockchain.proof_of_work(previous_nonce)
         previous_hash = blockchain.hash(previous_block)
-        #blockchain.add_transaction(sender = root_node, receiver = node_address, amount = 1.15, time=str(datetime.datetime.now()))
         block = blockchain.create_block(nonce, previous_hash, data)
     response = {'timestamp': block['timestamp'],
     'nonce': block['nonce'],
