@@ -21,8 +21,6 @@ from .models import Chain
 from django.conf import settings
 from .blockchain import Blockchain
 
-
-
 logger = logging.getLogger(__name__)
 
 #cache
