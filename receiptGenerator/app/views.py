@@ -119,6 +119,7 @@ def receiptGenerator(request):
 '''
     Store receipt on the database and post data on data retention
 '''
+# TODO: send receipt to the data retention and test it
 @csrf_exempt
 @api_view(('POST',))
 def reply_receipt(request):
