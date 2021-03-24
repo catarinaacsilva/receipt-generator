@@ -1,5 +1,7 @@
 import logging
+import hashlib
 import json
+from datetime import datetime
 from cryptography.hazmat.primitives import hashes, hmac
 
 from .models import Chain
@@ -8,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 class Blockchain:
     def create_block(self, nonce, previous_hash, data):
-        block = {'index': len(self.chain) + 1,
-                 'timestamp': datetime.timestamp(now),
+        now = datetime.now()
+        block = {'timestamp': datetime.timestamp(now),
                  'nonce': nonce,
                  'previous_hash': previous_hash,
                  'data': data
@@ -17,12 +19,12 @@ class Blockchain:
                 }
         #self.transactions = [] #New
         #self.chain.append(block)
-        Chain.objects.create(json_block=block, json_receipt=data)
+        #Chain.objects.create(json_block=block, json_receipt=data)
         return block
 
-    #TODO: needs to query database
+   
     def get_last_block(self):
-        last_entry_table = Chain.objects.latest()
+        last_entry_table = Chain.objects.latest('id_chain')
         return last_entry_table.json_block 
         #return self.chain[-1]
 
@@ -30,10 +32,7 @@ class Blockchain:
         new_nonce = 1
         check_nonce = False
         while check_nonce is False:
-            #hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
-            digest = hashes.Hash(hashes.SHA256())
-            digest.update(str(new_nonce**2 - previous_nonce**2).encode())
-            hash_operation = digest.finalize().encode("hex").upper()
+            hash_operation = hashlib.sha256(str(new_nonce**2 - previous_nonce**2).encode()).hexdigest()
             if hash_operation[:4] == '0000':
                 check_nonce = True
             else:
@@ -42,14 +41,10 @@ class Blockchain:
 
    
     def hash(self, block):
-        encoded_block = json.dumps(block)
-        digest = hashes.Hash(hashes.SHA256())
-        digest.update(encoded_block.encode())
-        return digest.finalize()
-        #encoded_block = json.dumps(block, sort_keys = True).encode()
-        #return hashlib.sha256(encoded_block).hexdigest()
+        encoded_block = json.dumps(block, sort_keys = True).encode()
+        return hashlib.sha256(encoded_block).hexdigest()
 
-    def is_chain_valid(self, chain):
+    def is_chain_valid(self):
         #previous_block = Chain.objects.earliest()
         #previous_block = chain[0]
         chain = Chain.objects.all()
@@ -58,6 +53,8 @@ class Blockchain:
             block = o.json_block
             if is_first:
                 is_first = False
+                if block['nonce'] != 1 or block['previous_hash'] != '0':
+                    return False
             else:
                 if block['previous_hash'] != self.hash(previous_block):
                     return False
