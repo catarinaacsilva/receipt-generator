@@ -141,3 +141,17 @@ def reply_receipt(request):
         return Response('Cannot create the receipt record', status=status.HTTP_400_BAD_REQUEST)
     
     return Response(status=status.HTTP_201_CREATED)
+
+'''
+    Chech if the receipt chain is valid
+'''
+
+@csrf_exempt
+@api_view(('GET',))
+def receipt_valid(request):
+    is_valid = blockchain.is_chain_valid()
+    if is_valid:
+        response = JsonResponse({'Message':'The chain is valid', 'Valid':True}, status=status.HTTP_201_CREATED)
+    else:
+        response = JsonResponse({'Message':'The chain is not valid', 'Valid': False}, status=status.HTTP_400_BAD_REQUEST)
+    return response
