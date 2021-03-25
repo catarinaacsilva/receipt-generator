@@ -117,19 +117,16 @@ def receiptGenerator(request):
 '''
     Store receipt on the database and post data on data retention
 '''
-# TODO: send receipt to the data retention and test it
+
 @csrf_exempt
 @api_view(('POST',))
 def reply_receipt(request):
     json_receipt = json.loads(request.body)
     logger.info(json_receipt)
 
-    #TODO: Check receipt: já esta verificado quando gera
-
     try:
-        #url = settings.DATA_RETENTION_RECEIPT
-        #receipt = {'id_receipt':json_receipt['Receipt ID'], 'receipt_timestamp':json_receipt['Receipt Timestamp']}
-        #x = requests.post(url, data=json_receipt)
+        url = settings.DATA_RETENTION_RECEIPT
+        x = requests.post(url, data=json_receipt)
         with transaction.atomic():
             block = mine_block(json_receipt)
             Chain.objects.create(json_block=block, json_receipt=json_receipt)
@@ -141,7 +138,7 @@ def reply_receipt(request):
     return Response(status=status.HTTP_201_CREATED)
 
 '''
-    Chech if the receipt chain is valid
+    Check if the receipt chain is valid
 '''
 @csrf_exempt
 @api_view(('GET',))
