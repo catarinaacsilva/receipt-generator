@@ -29,7 +29,7 @@ SECRET_KEY = 'ev3ldi(dyo*f#pt%fyiz4pe=7*o$2vkb339zy1(51%^cbjyd#8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['10.0.12.42']
 
 
 # Application definition
