@@ -15,7 +15,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.db import transaction
 
-from .models import Receipt_Block
+#from .models import Receipt_Block
 from .models import Chain
 
 from django.conf import settings
