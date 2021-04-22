@@ -19,15 +19,13 @@ from django.db import transaction
 from .models import Chain
 
 from django.conf import settings
-from .blockchain import Blockchain
+
 
 logger = logging.getLogger(__name__)
 
-#cache
 
 key = None
 
-blockchain = Blockchain()
 
 '''
     Initial page just to init the demo
@@ -53,120 +51,73 @@ def generate_keypair():
 @csrf_exempt
 @api_view(('GET',))
 def receiptGenerator(request):
-    version = request.GET['version']
-    now = datetime.now()
-    timestamp = datetime.timestamp(now)
-    idreceipt = str(uuid.uuid4())
-    if 'language' not in request.GET.keys():
-        language = 'English'
-    else:
-        language = request.GET['language']
-    
-    selfservicepoint = setting.SELF_SERVICE_POINT
-
-    key = generate_keypair()
-    
-    h = hmac.HMAC(key, hashes.SHA256())
-    h.update(idreceipt.encode())
-    selfservicetoken = h.finalize()
-
-    policy = request.GET['policy']
-    digest = hashes.Hash(hashes.SHA256())
-    digest.update(policy.encode())
-    policy_hash = digest.finalize() 
-    
-    consent = request.GET['consent']
-    if consent != 'given' or consent != 'rejected':
-        consent = 'rejected'
-    
-    
-    if 'legalJurisdiction' not in request.GET.keys():
-        legalJurisdiction = 'Europe'
-    else:
-        legalJurisdiction = request.GET['legalJurisdiction']
-    
-    controller = request.GET['controller']
-
-    legalJustification = 'consent'
-    methodCollection = 'online web action'
-    
-    receipt = {'Receipt  Version': int(version), 
-    'Receipt Timestamp': timestamp, 
-    'Receipt ID': idreceipt, 
-    'Language': language, 
-    'Self-service point': selfservicepoint,
-    'Self-service token': base64.b64encode(selfservicetoken).decode('utf-8'), 
-    'Privacy Policy fingerprint': policy, 
-    'Consent Status': consent, 
-    'Legal Jurisdiction': legalJurisdiction, 
-    'Controller Identity': controller, 
-    'Legal Justification': legalJustification, 
-    'Method of Collection': methodCollection}
-
-    receipt_json = json.dumps(receipt)
-   
-    digestjson = hashes.Hash(hashes.SHA256())
-    digestjson.update(receipt_json.encode())
-    receiptFingerprint = digestjson.finalize()
-    receipt['Receipt Fingerprint'] = base64.b64encode(receiptFingerprint).decode('utf-8')
-
-    logger.info(receipt)
-
-    return JsonResponse(receipt, content_type='application/json')
-
-'''
-    Store receipt on the database and post data on data retention
-'''
-
-@csrf_exempt
-@api_view(('POST',))
-def reply_receipt(request):
-    json_receipt = json.loads(request.body)
-    logger.info(json_receipt)
-
     try:
-        url = settings.DATA_RETENTION_RECEIPT
-        x = requests.post(url, data=json_receipt)
-        with transaction.atomic():
-            block = mine_block(json_receipt)
-            Chain.objects.create(json_block=block, json_receipt=json_receipt)
-    except Exception as e:
-        handle_exception()
-        print(e)
-        return Response('Cannot create the receipt record', status=status.HTTP_400_BAD_REQUEST)
+        version = request.GET['version']
+        now = datetime.now()
+        timestamp = datetime.timestamp(now)
+        idreceipt = str(uuid.uuid4())
+        if 'language' not in request.GET.keys():
+            language = 'English'
+        else:
+            language = request.GET['language']
+        
+        selfservicepoint = settings.SELF_SERVICE_POINT
+
+        key = generate_keypair()
+        
+        h = hmac.HMAC(key, hashes.SHA256())
+        h.update(idreceipt.encode())
+        selfservicetoken = h.finalize()
+
+        policy = request.GET['policy']
+        digest = hashes.Hash(hashes.SHA256())
+        digest.update(policy.encode())
+        policy_hash = digest.finalize() 
+        
+        consent = request.GET['consent']
+        if consent != 'given' or consent != 'rejected':
+            consent = 'rejected'
+        
+        
+        if 'legalJurisdiction' not in request.GET.keys():
+            legalJurisdiction = 'Europe'
+        else:
+            legalJurisdiction = request.GET['legalJurisdiction']
+        
+        controller = request.GET['controller']
+
+        legalJustification = 'consent'
+        methodCollection = 'online web action'
+        
+        receipt = {'Receipt  Version': int(version), 
+        'Receipt Timestamp': timestamp, 
+        'Receipt ID': idreceipt, 
+        'Language': language, 
+        'Self-service point': selfservicepoint,
+        'Self-service token': base64.b64encode(selfservicetoken).decode('utf-8'), 
+        'Privacy Policy fingerprint': policy, 
+        'Consent Status': consent, 
+        'Legal Jurisdiction': legalJurisdiction, 
+        'Controller Identity': controller, 
+        'Legal Justification': legalJustification, 
+        'Method of Collection': methodCollection}
+
+        receipt_json = json.dumps(receipt)
     
-    return Response(status=status.HTTP_201_CREATED)
+        digestjson = hashes.Hash(hashes.SHA256())
+        digestjson.update(receipt_json.encode())
+        receiptFingerprint = digestjson.finalize()
+        receipt['Receipt Fingerprint'] = base64.b64encode(receiptFingerprint).decode('utf-8')
 
-'''
-    Check if the receipt chain is valid
-'''
-@csrf_exempt
-@api_view(('GET',))
-def receipt_chain_valid(request):
-    is_valid = blockchain.is_chain_valid()
-    if is_valid:
-        response = JsonResponse({'Message':'The chain is valid', 'Valid':True}, status=status.HTTP_201_CREATED)
-    else:
-        response = JsonResponse({'Message':'The chain is not valid', 'Valid': False}, status=status.HTTP_400_BAD_REQUEST)
-    return response
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+
+    return JsonResponse({'timestamp': timestamp, 'receipt': receipt}, status=status.HTTP_201_CREATED)
+
 
 
 '''
-    Add new block
+TESTED
+##################################################################################################
+NOT TESTED
 '''
-def mine_block(data):
-    if not Chain.objects.exists():
-        block = blockchain.create_block(nonce = 1, previous_hash = '0', data=data)
-    else:
-        previous_block = blockchain.get_last_block()
-        previous_nonce = previous_block['nonce']
-        nonce = blockchain.proof_of_work(previous_nonce)
-        previous_hash = blockchain.hash(previous_block)
-        block = blockchain.create_block(nonce, previous_hash, data)
-    response = {'timestamp': block['timestamp'],
-    'nonce': block['nonce'],
-    'previous_hash': block['previous_hash'],
-    'data': data}
-                   
-    return response
-

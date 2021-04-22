@@ -29,7 +29,7 @@ SECRET_KEY = 'ev3ldi(dyo*f#pt%fyiz4pe=7*o$2vkb339zy1(51%^cbjyd#8'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['10.0.12.42']
+ALLOWED_HOSTS = ['10.0.12.42', 'localhost', '127.0.0.1']
 
 
 # Application definition
@@ -83,13 +83,12 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.sqlite3',
         #'NAME': BASE_DIR / 'db.sqlite3',
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'receiptdb',
+        'NAME': 'datadb',
         'USER': DATABASE_USERNAME,
         'PASSWORD': DATABASE_PASSWORD,
-        'HOST': 'postgres',
+        'HOST': 'localhost',
         'PORT': '5432',
     }
-
 }
 
 
@@ -132,4 +131,3 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 SELF_SERVICE_POINT = 'http://cassiopeia.id/receipts'
-DATA_RETENTION_RECEIPT = 'http://127.0.0.1:8000/receiptData'
