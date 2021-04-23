@@ -1,5 +1,6 @@
+import datetime
+import uuid
 from django.db import models
-from django.db.models import JSONField
 from cassandra.cqlengine import columns
 from django_cassandra_engine.models import DjangoCassandraModel
 
@@ -21,7 +22,10 @@ class Chain(models.Model):
 '''
 
 class Receipt(DjangoCassandraModel):
-    email = columns.CharField(primary_key=True, max_length=100) # email de quem assinou o recibo
-    id_receipt = columns.CharField(primary_key=True, max_length=100)
-    timestamp = columns.DateTimeField(auto_now_add = True)
-    json_receipt = JSONField()
+    email = columns.Text(primary_key=True, max_length=254)
+    id_receipt = columns.UUID(primary_key=True, default=uuid.uuid4)
+    timestamp_now = columns.DateTime(default=datetime.datetime.now)
+    json_receipt = columns.Text()
+
+    class Meta:
+        get_pk_field='email'
