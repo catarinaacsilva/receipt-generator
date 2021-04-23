@@ -122,6 +122,23 @@ NOT TESTED
 '''
 
 '''
+    Store sign receipt
+'''
+@csrf_exempt
+@api_view(('POST',))
+def storeReceipt():
+    parameters = json.loads(request.body)
+    json_receipt = parameters['json_receipt']
+    email = parameters['email']
+
+    try:
+        Receipt.objects.create(email=email, json_receipt=json_receipt)
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_201_CREATED)
+
+
+'''
     Return all the receipts id given the email
 '''
 @csrf_exempt
@@ -155,26 +172,37 @@ def getRecentReceipt():
     return JsonResponse({'email': email, 'Recent receipt':id_receipt}, status=status.HTTP_201_CREATED)
 
 
-
 '''
-    Store sign receipt
+    List all the receipts for a given user
 '''
 @csrf_exempt
-@api_view(('POST',))
-def storeReceipt():
-    parameters = json.loads(request.body)
-    json_receipt = parameters['json_receipt']
-    email = parameters['email']
+@api_view(('GET',))
+def getAllReceipts():
+    email = request.GET['email']
 
     try:
-        Receipt.objects.create(email=email, json_receipt=json_receipt)
+        receipt_info = Receipt.objects.filter(email=email)
+        response = []
+        for r in receipt_info:
+            response.append({'Receipt': r.json_receipt})
     except Exception as e:
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
-    return Response(status=status.HTTP_201_CREATED)
+    return JsonResponse({'email': email, 'Receipts':response}, status=status.HTTP_201_CREATED)
+
 
 '''
-    Return all the receipts for a specific user
+    Complete information about receipts for a given email
 '''
+@csrf_exempt
+@api_view(('GET',))
+def getReceipt():
+    email = request.GET['email']
 
-
-
+    try:
+        receipt_info = Receipt.objects.filter(email=email)
+        response = []
+        for r in receipt_info:
+            response.append({'receipt_id':r.id_receipt, 'timestamp': r.timestamp_now, 'Receipt': r.json_receipt})
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'receipts':response}, status=status.HTTP_201_CREATED)
