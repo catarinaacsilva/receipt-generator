@@ -17,6 +17,7 @@ from django.db import transaction
 
 from django.conf import settings
 
+from .models import Receipt
 
 logger = logging.getLogger(__name__)
 
@@ -118,3 +119,5 @@ TESTED
 ##################################################################################################
 NOT TESTED
 '''
+
+
