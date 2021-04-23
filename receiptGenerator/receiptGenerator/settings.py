@@ -82,9 +82,11 @@ WSGI_APPLICATION = 'receiptGenerator.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django_cassandra_engine',
-        'NAME': 'db',
-        'TEST_NAME': 'test_db',
-        'Host': 'localhost'
+        'NAME': 'dht',
+        #'TEST_NAME': 'test_db',
+        'Host': 'localhost',
+        'USER': 'cassandra',
+        'PASSWORD': 'cassandra',
         'OPTIONS': {
             'replication': {
                 'strategy_class': 'SimpleStrategy',

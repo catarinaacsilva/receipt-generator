@@ -28,11 +28,11 @@
 2. digest of method of collection: fingerprint (SHA256) of JavaScript + HTML of the page where the user clicks "I agree"
 3. Signed receipt from Controller: RSA2048; key generation and distribution are out of scope
 
-## PostgreSQL - Database
 
-- `psql -p 5432 -h localhost -U postgresdb -W`
-- `psql -h localhost -p 5432 -U cassiopeia -W -d cassiopeiadb`
-- List all tables: `\dt`
+## Cassandra - Database
+
+- Run `./manage.py sync_cassandra` in order to sync your models with Cassandra.
+- PK: email and receipt_id (we need two primary keys)
 
 ## Authors
 

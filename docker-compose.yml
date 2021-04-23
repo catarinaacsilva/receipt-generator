@@ -2,42 +2,45 @@ version: '3'
 
 services:
   cassandra0:
-    image: docker.io/bitnami/cassandra:3
+    image: bitnami/cassandra:latest
     ports:
       - '7000:7000'
       - '9042:9042'
+      - '7199:7199'
     volumes:
-      - 'cassandra_data:/dht0'
+      - 'cassandra0_data:/bitnami'
+      - 'init-scripts:/docker-entrypoint-initdb.d'
     environment:
       - CASSANDRA_SEEDS=cassandra0
       - CASSANDRA_USER=cassandra
       - CASSANDRA_PASSWORD=cassandra
       - CASSANDRA_CLUSTER_NAME=dht
   cassandra1:
-    image: docker.io/bitnami/cassandra:3
-    ports:
-      - '7001:7001'
-      - '9043:9043'
+    image: bitnami/cassandra:latest
     volumes:
-      - 'cassandra_data:/dht1'
+      - 'cassandra1_data:/bitnami'
     environment:
       - CASSANDRA_SEEDS=cassandra0
       - CASSANDRA_USER=cassandra
       - CASSANDRA_PASSWORD=cassandra
       - CASSANDRA_CLUSTER_NAME=dht
-  
-
 
 volumes:
-  cassandra_data:
+  init-scripts:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./init-scripts
+  cassandra0_data:
     driver: local
     driver_opts:
       o: bind
       type: none
       device: ./dht0
-  cassandra_data:
+  cassandra1_data:
     driver: local
     driver_opts:
       o: bind
       type: none
-      device: ./dht0
+      device: ./dht1

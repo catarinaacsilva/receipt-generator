@@ -21,7 +21,7 @@ class Chain(models.Model):
 '''
 
 class Receipt(DjangoCassandraModel):
-    email = columns.CharField(unique= False, max_length=100) # email de quem assinou o recibo
+    email = columns.CharField(primary_key=True, max_length=100) # email de quem assinou o recibo
     id_receipt = columns.CharField(primary_key=True, max_length=100)
     timestamp = columns.DateTimeField(auto_now_add = True)
     json_receipt = JSONField()
