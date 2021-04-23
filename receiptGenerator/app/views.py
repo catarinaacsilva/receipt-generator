@@ -3,6 +3,7 @@ import json
 import uuid
 import os
 import base64
+import requests
 from django.shortcuts import render
 from .forms import ReceiptForm
 from django.http import JsonResponse
@@ -119,5 +120,38 @@ TESTED
 ##################################################################################################
 NOT TESTED
 '''
+
+'''
+    Return receipt id given the email
+'''
+@csrf_exempt
+@api_view(('GET',))
+def storeReceipt():
+    email = request.GET['email']
+    
+    
+
+
+
+'''
+    Store receipts
+'''
+@csrf_exempt
+@api_view(('POST',))
+def storeReceipt():
+    parameters = json.loads(request.body)
+    json_receipt = parameters['json_receipt']
+    email = parameters['email']
+
+    try:
+        Receipt.objects.create(email=email, json_receipt=json_receipt)
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return Response(status=status.HTTP_201_CREATED)
+
+'''
+    Return all the receipts for a specific user
+'''
+
 
 
