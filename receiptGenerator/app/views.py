@@ -122,19 +122,42 @@ NOT TESTED
 '''
 
 '''
-    Return receipt id given the email
+    Return all the receipts id given the email
 '''
 @csrf_exempt
 @api_view(('GET',))
-def storeReceipt():
+def getReceipt():
     email = request.GET['email']
-    
-    
+
+    try:
+        receipt_info = Receipt.objects.filter(email=email)
+        response = []
+        for r in receipt_info:
+            response.append({'receipt_id':r.id_receipt, 'timestamp': r.timestamp_now})
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'receipts':response}, status=status.HTTP_201_CREATED)
+
+
+'''
+    Return the most recent receipt id for the given email
+'''
+@csrf_exempt
+@api_view(('GET',))
+def getRecentReceipt():
+    email = request.GET['email']
+
+    try:
+        receipt_info = Receipt.objects.filter(email=email)
+        id_receipt = receipt_info.id_receipt.first()
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'Recent receipt':id_receipt}, status=status.HTTP_201_CREATED)
 
 
 
 '''
-    Store receipts
+    Store sign receipt
 '''
 @csrf_exempt
 @api_view(('POST',))
