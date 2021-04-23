@@ -121,6 +121,7 @@ TESTED
 NOT TESTED
 '''
 
+
 '''
     Store sign receipt
 '''
@@ -189,6 +190,41 @@ def getAllReceipts():
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({'email': email, 'Receipts':response}, status=status.HTTP_201_CREATED)
 
+'''
+    Return the state for a given receipt
+'''
+@csrf_exempt
+@api_view(('GET',))
+def getReceiptState():
+    email = request.GET['email']
+    id_receipt = request.GET['id_receipt']
+
+    try:
+        state = Receipt.objects.get(pk=email, pk=id_receipt)
+        #receipt_info = Receipt.objects.filter(email=email, id_receipt=id_receipt)
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'receipt id': id_receipt, 'state':state}, status=status.HTTP_201_CREATED)
+
+
+'''
+    Return the state for all the receipts
+'''
+@csrf_exempt
+@api_view(('GET',))
+def getReceiptAllState():
+    email = request.GET['email']
+
+    try:
+        receipt_state = Receipt.objects.filter(email=email)
+        response = []
+        for r in receipt_state:
+            response.append({'Receipt id': r.id_receipt, 'state': r.state})
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'Receipt states':response}, status=status.HTTP_201_CREATED)
+
+
 
 '''
     Complete information about receipts for a given email
@@ -202,7 +238,7 @@ def getReceipt():
         receipt_info = Receipt.objects.filter(email=email)
         response = []
         for r in receipt_info:
-            response.append({'receipt_id':r.id_receipt, 'timestamp': r.timestamp_now, 'Receipt': r.json_receipt})
+            response.append({'receipt_id':r.id_receipt, 'timestamp': r.timestamp_now, 'Receipt': r.json_receipt, 'State': r.state})
     except Exception as e:
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({'email': email, 'receipts':response}, status=status.HTTP_201_CREATED)

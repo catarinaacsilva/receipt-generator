@@ -26,6 +26,7 @@ class Receipt(DjangoCassandraModel):
     id_receipt = columns.UUID(primary_key=True, default=uuid.uuid4)
     timestamp_now = columns.DateTime(default=datetime.datetime.now)
     json_receipt = columns.Text()
+    state = columns.Text()
 
     class Meta:
         get_pk_field='email'
