@@ -4,3 +4,4 @@ psycopg2-binary>=2.8.6
 djangorestframework>=3.12.2
 requests>=2.25.1
 cryptography>=3.4.6
+django-cassandra-engine>=1.6.1
