@@ -129,3 +129,6 @@ dmypy.json
 .pyre/
 
 secrets.py
+
+dht0/
+dht1/
