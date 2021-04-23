@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  cassandra0:
+    image: docker.io/bitnami/cassandra:3
+    ports:
+      - '7000:7000'
+      - '9042:9042'
+    volumes:
+      - 'cassandra_data:/dht0'
+    environment:
+      - CASSANDRA_SEEDS=cassandra0
+      - CASSANDRA_USER=cassandra
+      - CASSANDRA_PASSWORD=cassandra
+      - CASSANDRA_CLUSTER_NAME=dht
+  cassandra1:
+    image: docker.io/bitnami/cassandra:3
+    ports:
+      - '7001:7001'
+      - '9043:9043'
+    volumes:
+      - 'cassandra_data:/dht1'
+    environment:
+      - CASSANDRA_SEEDS=cassandra0
+      - CASSANDRA_USER=cassandra
+      - CASSANDRA_PASSWORD=cassandra
+      - CASSANDRA_CLUSTER_NAME=dht
+  
+
+
+volumes:
+  cassandra_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./dht0
+  cassandra_data:
+    driver: local
+    driver_opts:
+      o: bind
+      type: none
+      device: ./dht0
