@@ -65,8 +65,8 @@ curl -s -X GET "http://localhost:8000/getRecentReceipt?email=myemail@email.com" 
 
 # Return the state for all the receipts
 
-#echo -e "Return the state for all the receipts"
-#curl -s -X GET "http://localhost:8000/getReceiptAllState?email=myemail@email.com" | jq .
+echo -e "Return the state for all the receipts"
+curl -s -X GET "http://localhost:8000/receiptAllState?email=myemail@email.com" | jq .
 
 #************************************************************************************************************************************
 
@@ -77,8 +77,17 @@ content=$(curl -s -d "{\"json_receipt\": \"recibostate\", \"email\":\"statemyema
 id_receipt=$( jq -r  '.id_receipt' <<< "${content}" ) 
 echo "${id_receipt}"
 
+
 # Return the state for a given receipt
 
-echo -e "Return the most recent receipt id for the given email"
-curl -s -X GET "http://localhost:8000/getReceiptState?email=statemyemail@email.com&id_receipt=$id_receipt" | jq .
+echo -e "Return the state for a given receipt"
+curl -s -X GET "http://localhost:8000/receiptState?email=statemyemail@email.com&id_receipt=$id_receipt" | jq .
+
+
+#************************************************************************************************************************************
+
+#  Get a complete information about receipts for a given email
+
+echo -e " Get a complete information about receipts for a given email"
+curl -s -X GET "http://localhost:8000/infoReceipt?email=myemail@email.com" | jq .
 

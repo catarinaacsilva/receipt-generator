@@ -23,11 +23,12 @@ from app import views
 urlpatterns = [
     url(r'^receiptGenerator', views.receiptGenerator, name='receiptGenerator'),
     url(r'^storeReceipt', views.storeReceipt, name='storeReceipt'),
-    url(r'^getReceipt', views.getReceipt, name='getReceipt'),
     url(r'^removeReceipt', views.removeReceipt, name='removeReceipt'),
     url(r'^getRecentReceipt', views.getRecentReceipt, name='getRecentReceipt'),
-    url(r'^getReceiptState', views.getReceiptState, name='getReceiptState'),
-    url(r'^getReceiptAllState', views.getReceiptAllState, name='getReceiptAllState'),
+    url(r'^getReceipt', views.getReceipt, name='getReceipt'),
+    url(r'^infoReceipt', views.infoReceipt, name='infoReceipt'),
+    url(r'^receiptState', views.receiptState, name='receiptState'),
+    url(r'^receiptAllState', views.receiptAllState, name='receiptAllState'),
     
        
 ]
