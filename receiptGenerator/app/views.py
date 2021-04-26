@@ -134,6 +134,7 @@ def removeReceipt(request):
 
 '''
     Return the most recent receipt id for the given email
+    TODO: MUDAR->ORDENAR A MAO
 '''
 @csrf_exempt
 @api_view(('GET',))
@@ -219,7 +220,7 @@ def receiptAllState(request):
             response.append({'Receipt id': r.id_receipt, 'state': r.state})
     except Exception as e:
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
-    return JsonResponse({'email': email, 'Receipt states':response}, status=status.HTTP_201_CREATED)
+    return JsonResponse({'email': email, 'Receipt states':response})
 
 
 '''
@@ -237,4 +238,42 @@ def infoReceipt(request):
             response.append({'receipt_id':r.id_receipt, 'timestamp': r.timestamp_now, 'Receipt': r.json_receipt, 'State': r.state})
     except Exception as e:
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
-    return JsonResponse({'email': email, 'receipts':response}, status=status.HTTP_201_CREATED)
+    return JsonResponse({'email': email, 'receipts':response})
+
+
+'''
+    Return active receipts
+'''
+@csrf_exempt
+@api_view(('GET',))
+def activeReceipts(request):
+    try:
+        email = request.GET['email']
+
+        receipt_info = Receipt.objects.filter(email=email)
+        response = []
+        for r in receipt_info:
+            if r.state == 'active':
+                response.append(r.id_receipt)
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'receipts':response})
+
+
+'''
+    Return inactive receipts
+'''
+@csrf_exempt
+@api_view(('GET',))
+def inactiveReceipts(request):
+    try:
+        email = request.GET['email']
+
+        receipt_info = Receipt.objects.filter(email=email)
+        response = []
+        for r in receipt_info:
+            if r.state == 'inactive':
+                response.append(r.id_receipt)
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'receipts':response})

@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^infoReceipt', views.infoReceipt, name='infoReceipt'),
     url(r'^receiptState', views.receiptState, name='receiptState'),
     url(r'^receiptAllState', views.receiptAllState, name='receiptAllState'),
-    
+    url(r'^activeReceipts', views.activeReceipts, name='activeReceipts'),
+    url(r'^inactiveReceipts', views.inactiveReceipts, name='inactiveReceipts'),
        
 ]

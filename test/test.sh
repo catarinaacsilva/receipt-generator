@@ -10,7 +10,7 @@ curl -s -X GET "http://localhost:8000/receiptGenerator?version=1&policy=policy&c
 # Add signed receipt
 
 echo -e "Store receipt"
-curl -s -d "{\"json_receipt\": \"recibo\", \"email\":\"myemail@email.com\", \"state\":\"true\"}" \
+curl -s -d "{\"json_receipt\": \"recibo\", \"email\":\"myemail@email.com\", \"state\":\"active\"}" \
 -H "Content-Type: application/json" http://localhost:8000/storeReceipt | jq .
 
 
@@ -42,13 +42,13 @@ curl -s -X GET "http://localhost:8000/getReceipt?email=myemail@email.com" | jq .
 # Add signed receipt
 
 echo -e "Store receipt"
-curl -s -d "{\"json_receipt\": \"recibo\", \"email\":\"myemail@email.com\", \"state\":\"true\"}" \
+curl -s -d "{\"json_receipt\": \"recibo\", \"email\":\"myemail@email.com\", \"state\":\"active\"}" \
 -H "Content-Type: application/json" http://localhost:8000/storeReceipt | jq .
 
 sleep 1.5
 
 echo -e "Store receipt"
-curl -s -d "{\"json_receipt\": \"recibo\", \"email\":\"myemail@email.com\", \"state\":\"false\"}" \
+curl -s -d "{\"json_receipt\": \"recibo\", \"email\":\"myemail@email.com\", \"state\":\"inactive\"}" \
 -H "Content-Type: application/json" http://localhost:8000/storeReceipt | jq .
 
 # Return all the receipts id given the email
@@ -72,7 +72,7 @@ curl -s -X GET "http://localhost:8000/receiptAllState?email=myemail@email.com" |
 
 
 echo -e "Store receipt"
-content=$(curl -s -d "{\"json_receipt\": \"recibostate\", \"email\":\"statemyemail@email.com\", \"state\":\"false\"}" \
+content=$(curl -s -d "{\"json_receipt\": \"recibostate\", \"email\":\"statemyemail@email.com\", \"state\":\"inactive\"}" \
 -H "Content-Type: application/json" http://localhost:8000/storeReceipt | jq .) 
 id_receipt=$( jq -r  '.id_receipt' <<< "${content}" ) 
 echo "${id_receipt}"
@@ -91,3 +91,17 @@ curl -s -X GET "http://localhost:8000/receiptState?email=statemyemail@email.com&
 echo -e " Get a complete information about receipts for a given email"
 curl -s -X GET "http://localhost:8000/infoReceipt?email=myemail@email.com" | jq .
 
+#************************************************************************************************************************************
+
+#   Return active receipts
+
+echo -e "Return active receipts"
+curl -s -X GET "http://localhost:8000/activeReceipts?email=myemail@email.com" | jq .
+
+
+#************************************************************************************************************************************
+
+#   Return inactive receipts
+
+echo -e "Return inactive receipts"
+curl -s -X GET "http://localhost:8000/inactiveReceipts?email=myemail@email.com" | jq .
