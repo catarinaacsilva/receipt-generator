@@ -26,5 +26,8 @@ urlpatterns = [
     url(r'^getReceipt', views.getReceipt, name='getReceipt'),
     url(r'^removeReceipt', views.removeReceipt, name='removeReceipt'),
     url(r'^getRecentReceipt', views.getRecentReceipt, name='getRecentReceipt'),
+    url(r'^getReceiptState', views.getReceiptState, name='getReceiptState'),
+    url(r'^getReceiptAllState', views.getReceiptAllState, name='getReceiptAllState'),
     
+       
 ]

@@ -188,41 +188,9 @@ def getRecentReceipt(request):
 
 
 '''
-TESTED
-##################################################################################################
-NOT TESTED
-'''
-
-
-
-
-
-
-
-
-
-
-'''
-    List all the receipts for a given user
-'''
-@csrf_exempt
-@api_view(('GET',))
-def getAllReceipts(request):
-    email = request.GET['email']
-
-    try:
-        receipt_info = Receipt.objects.filter(email=email)
-        response = []
-        for r in receipt_info:
-            response.append({'Receipt': r.json_receipt})
-    except Exception as e:
-        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
-    return JsonResponse({'email': email, 'Receipts':response}, status=status.HTTP_201_CREATED)
-
-'''
     Return the state for a given receipt
 '''
-'''
+
 @csrf_exempt
 @api_view(('GET',))
 def getReceiptState():
@@ -230,12 +198,23 @@ def getReceiptState():
     id_receipt = request.GET['id_receipt']
 
     try:
-        state = Receipt.objects.get(pk=email, pk=id_receipt)
-        #receipt_info = Receipt.objects.filter(email=email, id_receipt=id_receipt)
+        state = Receipt.objects.filter(email=email, id_receipt=id_receipt)
     except Exception as e:
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({'email': email, 'receipt id': id_receipt, 'state':state}, status=status.HTTP_201_CREATED)
+
+
+
+
+
 '''
+TESTED
+##################################################################################################
+NOT TESTED
+'''
+
+
+
 
 '''
     Return the state for all the receipts
@@ -246,7 +225,7 @@ def getReceiptAllState(request):
     email = request.GET['email']
 
     try:
-        receipt_state = Receipt.objects.filter(email=email)
+        receipt_state = Receipt.objects.get(email=email)
         response = []
         for r in receipt_state:
             response.append({'Receipt id': r.id_receipt, 'state': r.state})
@@ -255,9 +234,8 @@ def getReceiptAllState(request):
     return JsonResponse({'email': email, 'Receipt states':response}, status=status.HTTP_201_CREATED)
 
 
-
 '''
-    Complete information about receipts for a given email
+    Get a complete information about receipts for a given email
 '''
 @csrf_exempt
 @api_view(('GET',))
