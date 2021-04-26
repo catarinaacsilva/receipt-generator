@@ -31,7 +31,7 @@
 
 ## Cassandra - Database
 
-- Run `./manage.py sync_cassandra` in order to sync your models with Cassandra.
+- Run `python manage.py sync_cassandra` in order to sync your models with Cassandra.
 - PK: email and receipt_id (we need two primary keys)
 - Important commands:
 

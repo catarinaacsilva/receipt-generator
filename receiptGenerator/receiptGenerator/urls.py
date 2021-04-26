@@ -22,4 +22,6 @@ from app import views
 
 urlpatterns = [
     url(r'^receiptGenerator', views.receiptGenerator, name='receiptGenerator'),
+    url(r'^storeReceipt', views.storeReceipt, name='storeReceipt'),
+    
 ]

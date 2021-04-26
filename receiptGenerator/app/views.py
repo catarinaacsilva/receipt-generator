@@ -114,6 +114,24 @@ def receiptGenerator(request):
     return JsonResponse({'timestamp': timestamp, 'receipt': receipt}, status=status.HTTP_201_CREATED)
 
 
+'''
+    Store sign receipt
+'''
+@csrf_exempt
+@api_view(('POST',))
+def storeReceipt(request):
+    parameters = json.loads(request.body)
+    json_receipt = parameters['json_receipt']
+    email = parameters['email']
+
+    try:
+        r = Receipt.objects.create(email=email, json_receipt=json_receipt)
+        id_receipt = r.id_receipt
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'id_receipt': id_receipt}, status=status.HTTP_201_CREATED)
+
+
 
 '''
 TESTED
@@ -122,21 +140,7 @@ NOT TESTED
 '''
 
 
-'''
-    Store sign receipt
-'''
-@csrf_exempt
-@api_view(('POST',))
-def storeReceipt():
-    parameters = json.loads(request.body)
-    json_receipt = parameters['json_receipt']
-    email = parameters['email']
 
-    try:
-        Receipt.objects.create(email=email, json_receipt=json_receipt)
-    except Exception as e:
-        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
-    return Response(status=status.HTTP_201_CREATED)
 
 
 '''
@@ -144,7 +148,7 @@ def storeReceipt():
 '''
 @csrf_exempt
 @api_view(('GET',))
-def getReceipt():
+def getReceipt(request):
     email = request.GET['email']
 
     try:
@@ -162,7 +166,7 @@ def getReceipt():
 '''
 @csrf_exempt
 @api_view(('GET',))
-def getRecentReceipt():
+def getRecentReceipt(request):
     email = request.GET['email']
 
     try:
@@ -178,7 +182,7 @@ def getRecentReceipt():
 '''
 @csrf_exempt
 @api_view(('GET',))
-def getAllReceipts():
+def getAllReceipts(request):
     email = request.GET['email']
 
     try:
@@ -193,6 +197,7 @@ def getAllReceipts():
 '''
     Return the state for a given receipt
 '''
+'''
 @csrf_exempt
 @api_view(('GET',))
 def getReceiptState():
@@ -205,14 +210,14 @@ def getReceiptState():
     except Exception as e:
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({'email': email, 'receipt id': id_receipt, 'state':state}, status=status.HTTP_201_CREATED)
-
+'''
 
 '''
     Return the state for all the receipts
 '''
 @csrf_exempt
 @api_view(('GET',))
-def getReceiptAllState():
+def getReceiptAllState(request):
     email = request.GET['email']
 
     try:
@@ -231,7 +236,7 @@ def getReceiptAllState():
 '''
 @csrf_exempt
 @api_view(('GET',))
-def getReceipt():
+def getReceipt(request):
     email = request.GET['email']
 
     try:
