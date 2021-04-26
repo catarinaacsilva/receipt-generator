@@ -136,3 +136,6 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 SELF_SERVICE_POINT = 'http://cassiopeia.id/receipts'
+
+
+CASSANDRA_FALLBACK_ORDER_BY_PYTHON = True

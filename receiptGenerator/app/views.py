@@ -171,6 +171,23 @@ def getReceipt(request):
 
 
 '''
+    Return the most recent receipt id for the given email
+'''
+@csrf_exempt
+@api_view(('GET',))
+def getRecentReceipt(request):
+    email = request.GET['email']
+
+    try:
+        receipt_info = Receipt.objects.filter(email=email).order_by('id_receipt')[0]
+        id_receipt = receipt_info.id_receipt
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'email': email, 'Recent receipt':id_receipt}, status=status.HTTP_201_CREATED)
+
+
+
+'''
 TESTED
 ##################################################################################################
 NOT TESTED
@@ -183,20 +200,6 @@ NOT TESTED
 
 
 
-'''
-    Return the most recent receipt id for the given email
-'''
-@csrf_exempt
-@api_view(('GET',))
-def getRecentReceipt(request):
-    email = request.GET['email']
-
-    try:
-        receipt_info = Receipt.objects.filter(email=email)
-        id_receipt = receipt_info.id_receipt.first()
-    except Exception as e:
-        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
-    return JsonResponse({'email': email, 'Recent receipt':id_receipt}, status=status.HTTP_201_CREATED)
 
 
 '''
