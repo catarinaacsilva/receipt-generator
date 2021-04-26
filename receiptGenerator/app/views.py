@@ -123,24 +123,14 @@ def storeReceipt(request):
     parameters = json.loads(request.body)
     json_receipt = parameters['json_receipt']
     email = parameters['email']
+    state = parameters['state']
 
     try:
-        r = Receipt.objects.create(email=email, json_receipt=json_receipt)
+        r = Receipt.objects.create(email=email, json_receipt=json_receipt, state = state)
         id_receipt = r.id_receipt
     except Exception as e:
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({'email': email, 'id_receipt': id_receipt}, status=status.HTTP_201_CREATED)
-
-
-
-'''
-TESTED
-##################################################################################################
-NOT TESTED
-'''
-
-
-
 
 
 '''
@@ -159,6 +149,20 @@ def getReceipt(request):
     except Exception as e:
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({'email': email, 'receipts':response}, status=status.HTTP_201_CREATED)
+
+
+
+'''
+TESTED
+##################################################################################################
+NOT TESTED
+'''
+
+
+
+
+
+
 
 
 '''
