@@ -115,6 +115,24 @@ def receiptGenerator(request):
 
 
 '''
+    Remove receipts: for debug mode
+'''
+
+@csrf_exempt
+@api_view(('POST',))
+def removeReceipt(request):
+    parameters = json.loads(request.body)
+    email = parameters['email']
+
+    try:
+        with transaction.atomic():
+            Receipt.objects.filter(email=email).delete()
+    except Exception as e:
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+
+    return Response(status=status.HTTP_201_CREATED)
+
+'''
     Store sign receipt
 '''
 @csrf_exempt
