@@ -68,10 +68,17 @@ def receiptGenerator(request):
         h.update(idreceipt.encode())
         selfservicetoken = h.finalize()
 
+        userid = request.GET['userid']
+
         policy = request.GET['policy']
-        digest = hashes.Hash(hashes.SHA256())
-        digest.update(policy.encode())
-        policy_hash = digest.finalize() 
+        #digest = hashes.Hash(hashes.SHA256())
+        #digest.update(policy.encode())
+        #policy_hash = digest.finalize() 
+
+
+        devices = request.GET['devices']
+        entities = request.GET['entities']
+        
         
         consent = request.GET['consent']
         if consent != 'given' or consent != 'rejected':
@@ -83,10 +90,12 @@ def receiptGenerator(request):
         else:
             legalJurisdiction = request.GET['legalJurisdiction']
         
-        controller = request.GET['controller']
+        #controller = request.GET['controller']
 
         legalJustification = 'consent'
         methodCollection = 'online web action'
+
+        otherinfo = request.GET['otherinfo']
         
         receipt = {'Receipt  Version': int(version), 
         'Receipt Timestamp': timestamp, 
@@ -94,12 +103,17 @@ def receiptGenerator(request):
         'Language': language, 
         'Self-service point': selfservicepoint,
         'Self-service token': base64.b64encode(selfservicetoken).decode('utf-8'), 
-        'Privacy Policy fingerprint': policy, 
+        'userid': userid,
+        'policy': policy,
+        #'Privacy Policy fingerprint': policy_hash, 
+        'devices': devices,
+        'entities': entities,
         'Consent Status': consent, 
         'Legal Jurisdiction': legalJurisdiction, 
-        'Controller Identity': controller, 
+        #'Controller Identity': controller, 
         'Legal Justification': legalJustification, 
-        'Method of Collection': methodCollection}
+        'Method of Collection': methodCollection,
+        'Other Information': otherinfo}
 
         receipt_json = json.dumps(receipt)
     
