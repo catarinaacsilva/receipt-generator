@@ -70,18 +70,19 @@ def receiptGenerator(request):
 
         userid = request.GET['userid']
 
-        policy = request.GET['policy']
+        #policy = request.GET['policy']
         #digest = hashes.Hash(hashes.SHA256())
         #digest.update(policy.encode())
         #policy_hash = digest.finalize() 
 
-
+        
         devices = request.GET['devices']
+        print(devices)
         entities = request.GET['entities']
         
         
         consent = request.GET['consent']
-        if consent != 'given' or consent != 'rejected':
+        if consent != 'Consent' or consent != 'No Consent':
             consent = 'rejected'
         
         
@@ -108,7 +109,6 @@ def receiptGenerator(request):
         #'Privacy Policy fingerprint': policy_hash, 
         'devices': devices,
         'entities': entities,
-        'Consent Status': consent, 
         'Legal Jurisdiction': legalJurisdiction, 
         #'Controller Identity': controller, 
         'Legal Justification': legalJustification, 
@@ -123,6 +123,7 @@ def receiptGenerator(request):
         receipt['Receipt Fingerprint'] = base64.b64encode(receiptFingerprint).decode('utf-8')
 
     except Exception as e:
+        print(e)
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
 
     return JsonResponse({'timestamp': timestamp, 'receipt': receipt}, status=status.HTTP_201_CREATED)
