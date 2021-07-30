@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view
 from django.db import transaction
+from copy import deepcopy
 
 from django.conf import settings
 
@@ -51,24 +52,24 @@ def generate_keypair():
 @api_view(('GET',))
 def receiptGenerator(request):
     try:
-        version = request.GET['version']
+        parameters = json.loads(request.body)
+        version = parameters['version']
         now = datetime.now()
         timestamp = datetime.timestamp(now)
         idreceipt = str(uuid.uuid4())
-        if 'language' not in request.GET.keys():
+        if 'language' not in parameters.keys():
             language = 'English'
         else:
-            language = request.GET['language']
-        
-        selfservicepoint = settings.SELF_SERVICE_POINT
+            language = parameters['language']
 
-        key = generate_keypair()
+        if 'selfservicepoint' not in parameters.keys():
+            selfservicepoint = settings.SELF_SERVICE_POINT
+        else:
+            selfservicepoint = parameters['selfservicepoint']
         
-        h = hmac.HMAC(key, hashes.SHA256())
-        h.update(idreceipt.encode())
-        selfservicetoken = h.finalize()
+    
 
-        userid = request.GET['userid']
+        userid = parameters['userid']
 
         #policy = request.GET['policy']
         #digest = hashes.Hash(hashes.SHA256())
@@ -76,41 +77,31 @@ def receiptGenerator(request):
         #policy_hash = digest.finalize() 
 
         
-        devices = request.GET['devices']
-        print(devices)
-        entities = request.GET['entities']
+        devices = parameters['devices']
+        
+        entities = parameters['entities']
         
         
-        consent = request.GET['consent']
-        if consent != 'Consent' or consent != 'No Consent':
-            consent = 'rejected'
-        
-        
-        if 'legalJurisdiction' not in request.GET.keys():
+        if 'legalJurisdiction' not in parameters.keys():
             legalJurisdiction = 'Europe'
         else:
-            legalJurisdiction = request.GET['legalJurisdiction']
-        
-        #controller = request.GET['controller']
+            legalJurisdiction = parameters['legalJurisdiction']
+
 
         legalJustification = 'consent'
         methodCollection = 'online web action'
 
-        otherinfo = request.GET['otherinfo']
+        otherinfo = parameters['otherinfo']
         
         receipt = {'Receipt  Version': int(version), 
         'Receipt Timestamp': timestamp, 
         'Receipt ID': idreceipt, 
         'Language': language, 
         'Self-service point': selfservicepoint,
-        'Self-service token': base64.b64encode(selfservicetoken).decode('utf-8'), 
-        'userid': userid,
-        'policy': policy,
-        #'Privacy Policy fingerprint': policy_hash, 
+        'userid': userid, 
         'devices': devices,
         'entities': entities,
         'Legal Jurisdiction': legalJurisdiction, 
-        #'Controller Identity': controller, 
         'Legal Justification': legalJustification, 
         'Method of Collection': methodCollection,
         'Other Information': otherinfo}
@@ -174,12 +165,30 @@ def storeReceipt(request):
     parameters = json.loads(request.body)
     json_receipt = parameters['json_receipt']
     email = parameters['email']
-    state = parameters['state']
+    #state = parameters['state']
+    state = 'True'
 
     try:
-        r = Receipt.objects.create(email=email, json_receipt=json_receipt, state = state)
+        # check receipt integrity
+        tmp_receipt = deepcopy(json_receipt)
+        tmp_receipt.pop('signature')
+        tmp_receipt.pop('Receipt Fingerprint')
+        print(tmp_receipt)
+        tmp_receipt = json.dumps(tmp_receipt)
+        print(tmp_receipt)
+
+        digestjson = hashes.Hash(hashes.SHA256())
+        digestjson.update(tmp_receipt.encode())
+        receiptFingerprint = digestjson.finalize()
+        receiptFingerprint = base64.b64encode(receiptFingerprint).decode('utf-8')
+
+        if receiptFingerprint != json_receipt['Receipt Fingerprint']:
+            raise Exception('Integrity failed')
+
+        r = Receipt.objects.create(email=email, json_receipt=json.dumps(json_receipt), state = state)
         id_receipt = r.id_receipt
     except Exception as e:
+        print(e)
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({'email': email, 'id_receipt': id_receipt})
 
