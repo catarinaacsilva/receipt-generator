@@ -139,20 +139,23 @@ def removeReceipt(request):
     return Response(status=status.HTTP_201_CREATED)
 
 '''
-    Return the most recent receipt id for the given email
-    TODO: MUDAR->ORDENAR A MAO
+    Return all receipts given user email
 '''
 @csrf_exempt
 @api_view(('GET',))
-def getRecentReceipt(request):
+def getReceipt(request):
     email = request.GET['email']
+    receipts = []
 
     try:
-        receipt_info = Receipt.objects.filter(email=email).order_by('id_receipt')[0]
-        id_receipt = receipt_info.id_receipt
+        receipt_object = Receipt.objects.filter(email=email)
+        for r in receipt_object:
+            receipts.append({'json_receipt': json.loads(r.json_receipt), 'timestamp': r.timestamp_now})
     except Exception as e:
+        print(e)
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
-    return JsonResponse({'email': email, 'Recent receipt':id_receipt})
+    print(receipts)
+    return JsonResponse({'receipts':receipts})
 
 
 
@@ -165,7 +168,6 @@ def storeReceipt(request):
     parameters = json.loads(request.body)
     json_receipt = parameters['json_receipt']
     email = parameters['email']
-    #state = parameters['state']
     state = 'True'
 
     try:
@@ -185,37 +187,18 @@ def storeReceipt(request):
         if receiptFingerprint != json_receipt['Receipt Fingerprint']:
             raise Exception('Integrity failed')
 
-        r = Receipt.objects.create(email=email, json_receipt=json.dumps(json_receipt), state = state)
-        id_receipt = r.id_receipt
+        id_receipt = json_receipt['Receipt ID']
+
+        r = Receipt.objects.create(email=email, id_receipt=id_receipt, json_receipt=json.dumps(json_receipt), state=state)
     except Exception as e:
         print(e)
         return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({'email': email, 'id_receipt': id_receipt})
 
 
-
-'''
-    Return all the receipts id given the email
-'''
-@csrf_exempt
-@api_view(('GET',))
-def getReceipt(request):
-    email = request.GET['email']
-
-    try:
-        receipt_info = Receipt.objects.filter(email=email)
-        response = []
-        for r in receipt_info:
-            response.append({'receipt_id':r.id_receipt, 'timestamp': r.timestamp_now})
-    except Exception as e:
-        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
-    return JsonResponse({'email': email, 'receipts':response})
-
-
 '''
     Return the state for a given receipt
 '''
-
 @csrf_exempt
 @api_view(('GET',))
 def receiptState(request):

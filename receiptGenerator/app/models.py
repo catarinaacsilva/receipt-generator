@@ -23,7 +23,7 @@ class Chain(models.Model):
 
 class Receipt(DjangoCassandraModel):
     email = columns.Text(primary_key=True, max_length=254)
-    id_receipt = columns.UUID(primary_key=True, default=uuid.uuid4)
+    id_receipt = columns.UUID(primary_key=True)
     timestamp_now = columns.DateTime(default=datetime.datetime.now)
     json_receipt = columns.Text()
     state = columns.Text()
