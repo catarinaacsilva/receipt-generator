@@ -24,11 +24,11 @@ urlpatterns = [
     url(r'^receiptGenerator', views.receiptGenerator, name='receiptGenerator'),
     url(r'^storeReceipt', views.storeReceipt, name='storeReceipt'),
     url(r'^removeReceipt', views.removeReceipt, name='removeReceipt'),
+    url(r'^getReceipts', views.getReceipts, name='getReceipts'),
     url(r'^getReceipt', views.getReceipt, name='getReceipt'),
     url(r'^infoReceipt', views.infoReceipt, name='infoReceipt'),
     url(r'^receiptState', views.receiptState, name='receiptState'),
     url(r'^receiptAllState', views.receiptAllState, name='receiptAllState'),
     url(r'^activeReceipts', views.activeReceipts, name='activeReceipts'),
-    url(r'^inactiveReceipts', views.inactiveReceipts, name='inactiveReceipts'),
-       
+    url(r'^inactiveReceipts', views.inactiveReceipts, name='inactiveReceipts'),     
 ]

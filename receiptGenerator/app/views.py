@@ -16,32 +16,12 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from django.db import transaction
 from copy import deepcopy
-
 from django.conf import settings
-
 from .models import Receipt
+
 
 logger = logging.getLogger(__name__)
 
-
-key = None
-
-
-'''
-    Initial page just to init the demo
-'''
-def index(request):
-    return render(request, 'index.html')
-
-
-'''
-    Python Cryptography Generate Random Keys 
-'''
-def generate_keypair():
-    if key is not None:
-        return key
-    else:
-        return os.urandom(32)
 
 
 '''
@@ -66,8 +46,6 @@ def receiptGenerator(request):
             selfservicepoint = settings.SELF_SERVICE_POINT
         else:
             selfservicepoint = parameters['selfservicepoint']
-        
-    
 
         userid = parameters['userid']
 
@@ -76,17 +54,13 @@ def receiptGenerator(request):
         #digest.update(policy.encode())
         #policy_hash = digest.finalize() 
 
-        
         devices = parameters['devices']
-        
         entities = parameters['entities']
-        
         
         if 'legalJurisdiction' not in parameters.keys():
             legalJurisdiction = 'Europe'
         else:
             legalJurisdiction = parameters['legalJurisdiction']
-
 
         legalJustification = 'consent'
         methodCollection = 'online web action'
@@ -143,7 +117,7 @@ def removeReceipt(request):
 '''
 @csrf_exempt
 @api_view(('GET',))
-def getReceipt(request):
+def getReceipts(request):
     email = request.GET['email']
     receipts = []
 
@@ -157,6 +131,26 @@ def getReceipt(request):
     print(receipts)
     return JsonResponse({'receipts':receipts})
 
+
+'''
+    Return all receipts given user email
+'''
+@csrf_exempt
+@api_view(('GET',))
+def getReceipt(request):
+    email = request.GET['email']
+    receipt_id = request.GET['receiptid']
+    receipt = None
+
+    try:
+        receipt_object = Receipt.objects.get(email=email, id_receipt=receipt_id)
+        #for r in receipt_object:
+        #    receipts.append({'json_receipt': json.loads(r.json_receipt), 'timestamp': r.timestamp_now})
+        receipt = json.loads(receipt_object.json_receipt)
+    except Exception as e:
+        print(e)
+        return Response(f'Exception: {e}\n', status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({'receipt':receipt})
 
 
 '''
